@@ -1,12 +1,10 @@
 <?php
 
-namespace Spiffy\Event;
+namespace Tonis\Event;
 
 trait EventsAwareTrait
 {
-    /**
-     * @var Manager
-     */
+    /** @var Manager */
     protected $events;
 
     /**
@@ -15,7 +13,7 @@ trait EventsAwareTrait
     public function setEventManager(Manager $events)
     {
         $this->events = $events;
-        $this->attachDefaultPlugins($events);
+        $this->attachDefaultListeners($events);
     }
 
     /**
@@ -24,7 +22,7 @@ trait EventsAwareTrait
     public function events()
     {
         if (!$this->events instanceof Manager) {
-            $this->setEventManager(new EventManager());
+            $this->setEventManager(new Manager());
         }
         return $this->events;
     }
@@ -33,7 +31,7 @@ trait EventsAwareTrait
      * @codeCoverageIgnore
      * @param Manager $events
      */
-    protected function attachDefaultPlugins(Manager $events)
+    protected function attachDefaultListeners(Manager $events)
     {
     }
 }

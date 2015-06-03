@@ -1,10 +1,10 @@
 <?php
 
-namespace Spiffy\Event\Exception;
+namespace Tonis\Event\Exception;
 
-use Spiffy\Event\Event;
+use Tonis\Event\Event;
 
-class PluginException extends \RuntimeException
+class SubscriberException extends \RuntimeException
 {
     /**
      * @param Event $event
@@ -14,7 +14,7 @@ class PluginException extends \RuntimeException
     {
         $msg = sprintf(
             'Error: exception while firing "%s" caught from %s::%d',
-            $event->getType(),
+            $event->getName(),
             $exception->getFile(),
             $exception->getLine()
         );

@@ -1,20 +1,21 @@
 <?php
 
-namespace Spiffy\Event;
+namespace Tonis\Event;
 
-use Spiffy\Event\TestAsset\EventsAware;
+use Tonis\Event\TestAsset\EventsAware;
 
 /**
- * @coversDefaultClass \Spiffy\Event\EventsAwareTrait
+ * @coversDefaultClass \Tonis\Event\EventsAwareTrait
  */
 class EventsAwareTraitTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers ::setEventManager, ::attachDefaultPlugins
+     * @covers ::setEventManager
+     * @covers ::attachDefaultListeners
      */
     public function testSetEventManagerInitializesEvents()
     {
-        $em = new EventManager();
+        $em = new Manager();
 
         $trait = new EventsAware();
         $trait->setEventManager($em);
@@ -26,11 +27,12 @@ class EventsAwareTraitTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::events, ::setEventManager
+     * @covers ::events
+     * @covers ::setEventManager
      */
     public function testEventsAreLazyLoaded()
     {
         $trait = new EventsAware();
-        $this->assertInstanceOf('Spiffy\Event\Manager', $trait->events());
+        $this->assertInstanceOf('Tonis\Event\Manager', $trait->events());
     }
 }

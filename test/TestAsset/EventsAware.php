@@ -1,16 +1,16 @@
 <?php
 
-namespace Spiffy\Event\TestAsset;
+namespace Tonis\Event\TestAsset;
 
-use Spiffy\Event\EventsAwareTrait;
-use Spiffy\Event\Manager;
+use Tonis\Event\EventsAwareTrait;
+use Tonis\Event\Manager;
 
 class EventsAware
 {
     use EventsAwareTrait;
 
-    protected function attachDefaultPlugins(Manager $events)
+    protected function attachDefaultListeners(Manager $events)
     {
-        $events->plug(new BasicPlugin());
+        $events->subscribe(new BasicSubscriber());
     }
 }

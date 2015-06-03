@@ -10,7 +10,7 @@
         </whitelist>
     </filter>
     <testsuites>
-        <testsuite name="Spiffy\Event">
+        <testsuite name="Tonis\Event">
             <directory>.</directory>
         </testsuite>
     </testsuites>

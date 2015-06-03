@@ -1,6 +1,6 @@
 <?php
 
-namespace Spiffy\Event\Exception;
+namespace Tonis\Event\Exception;
 
 class InvalidPriorityException extends \InvalidArgumentException
 {

@@ -1,109 +1,24 @@
 <?php
 
-namespace  Spiffy\Event;
+namespace Tonis\Event;
 
-class Event
+class Event implements EventInterface
 {
-    /**
-     * @var bool
-     */
-    protected $stopped = false;
+    /** @var string */
+    protected $name;
+    /** @var bool */
+    private $stopped = false;
 
     /**
-     * @var array
+     * @param string $name
      */
-    protected $params = [];
-
-    /**
-     * @var string
-     */
-    protected $type;
-
-    /**
-     * @var mixed
-     */
-    protected $target;
-
-    /**
-     * @param string $type
-     * @param mixed $target
-     * @param array $params
-     */
-    public function __construct($type = null, $target = null, array $params = [])
+    public function __construct($name)
     {
-        $this->type = $type;
-        $this->target = $target;
-        $this->params = $params;
+        $this->name = $name;
     }
 
     /**
-     * @param string $key
-     * @param mixed $value
-     */
-    public function set($key, $value)
-    {
-        $this->params[$key] = $value;
-    }
-
-    /**
-     * @param string $key
-     * @return mixed
-     */
-    public function get($key)
-    {
-        return isset($this->params[$key]) ? $this->params[$key] : null;
-    }
-
-    /**
-     * @param array $params
-     */
-    public function setParams(array $params)
-    {
-        $this->params = $params;
-    }
-
-    /**
-     * @return array
-     */
-    public function getParams()
-    {
-        return $this->params;
-    }
-
-    /**
-     * @param string $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param mixed $target
-     */
-    public function setTarget($target)
-    {
-        $this->target = $target;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTarget()
-    {
-        return $this->target;
-    }
-
-    /**
-     * Stops any further propagation execution of this event.
+     * {@inheritDoc}
      */
     public function stop()
     {
@@ -111,10 +26,18 @@ class Event
     }
 
     /**
-     * @return boolean
+     * {@inheritDoc}
      */
     public function isStopped()
     {
         return $this->stopped;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getName()
+    {
+        return $this->name;
     }
 }

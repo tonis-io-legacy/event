@@ -1,16 +1,16 @@
 <?php
 
-namespace Spiffy\Event\TestAsset;
+namespace Tonis\Event\TestAsset;
 
-use Spiffy\Event\Plugin;
-use Spiffy\Event\Manager;
+use Tonis\Event\Manager;
+use Tonis\Event\SubscriberInterface;
 
-class BasicPlugin implements Plugin
+class BasicSubscriber implements SubscriberInterface
 {
     /**
      * {@inheritDoc}
      */
-    public function plug(Manager $events)
+    public function subscribe(Manager $events)
     {
         $events->on('foo', [$this, 'onFoo']);
     }

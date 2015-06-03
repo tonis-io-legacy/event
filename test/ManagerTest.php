@@ -1,23 +1,26 @@
 <?php
 
-namespace Spiffy\Event;
-use Spiffy\Event\TestAsset\BasicPlugin;
+namespace Tonis\Event;
+
+use Tonis\Event\TestAsset\BasicPlugin;
+use Tonis\Event\TestAsset\BasicSubscriber;
+use Tonis\Event\TestAsset\EventWithNoName;
 
 /**
  * Class EventManagerTest
- * @package Spiffy\Event
+ * @package Tonis\Event
  *
- * @coversDefaultClass Spiffy\Event\EventManager
+ * @coversDefaultClass \Tonis\Event\Manager
  */
 class EventManagerTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers ::plug
+     * @covers ::subscribe
      */
-    public function testPlug()
+    public function testSubscribe()
     {
-        $em = new EventManager();
-        $em->plug(new BasicPlugin());
+        $em = new Manager();
+        $em->subscribe(new BasicSubscriber());
 
         $result = $em->fire('foo');
 
@@ -25,36 +28,40 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::fire, \Spiffy\Event\Exception\MissingTypeException
-     * @expectedException \Spiffy\Event\Exception\MissingTypeException
-     * @expectedExceptionMessage Event object given but no type specified
+     * @covers ::fire
+     * @covers ::getQueue
+     * @covers \Tonis\Event\Exception\MissingNameException
+     * @expectedException \Tonis\Event\Exception\MissingNameException
+     * @expectedExceptionMessage Event given but no name specified
      */
-    public function testExceptionThrownForMissingType()
+    public function testExceptionThrownForMissingName()
     {
-        $event = new Event();
-        $em = new EventManager();
+        $event = new EventWithNoName();
+        $em = new Manager();
         $em->fire($event);
     }
 
     /**
-     * @covers ::fire, \Spiffy\Event\Exception\PluginException
-     * @expectedException \Spiffy\Event\Exception\PluginException
+     * @covers ::fire
+     * @covers \Tonis\Event\Exception\SubscriberException
+     * @expectedException \Tonis\Event\Exception\SubscriberException
      * @expectedExceptionMessage Error: exception while firing "foo" caught from
      */
     public function testExceptionsAreRethrown()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $em->on('foo', function() { throw new \RuntimeException; });
         $em->fire('foo');
     }
 
     /**
      * @covers ::fire
+     * @covers ::getQueue
      */
     public function testEventsStops()
     {
         $var = null;
-        $em = new EventManager();
+        $em = new Manager();
         $em->on('foo', function($e) use (&$var) {
             $var = 'foo';
             $e->stop();
@@ -68,39 +75,40 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
     }
 
     /**
-     * @covers ::on, ::getEvents
+     * @covers ::on
+     * @covers ::getListeners
      */
     public function testOnAddsEventsAndAreRetrievedProperly()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $em->on('foo', function() { echo 'bar'; });
 
-        $this->assertCount(1, $em->getEvents());
-        $this->assertCount(1, $em->getEvents('foo'));
-        $this->assertCount(0, $em->getEvents('bar'));
+        $this->assertCount(1, $em->getListeners());
+        $this->assertCount(1, $em->getListeners('foo'));
+        $this->assertCount(0, $em->getListeners('bar'));
     }
 
     /**
      * @covers ::on
-     * @covers \Spiffy\Event\Exception\InvalidCallableException::__construct
-     * @expectedException \Spiffy\Event\Exception\InvalidCallableException
+     * @covers \Tonis\Event\Exception\InvalidCallableException::__construct
+     * @expectedException \Tonis\Event\Exception\InvalidCallableException
      * @expectedExceptionMessage Invalid argument: expected callable but received boolean
      */
     public function testOnThrowsExceptionForNonCallable()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $em->on('foo', false);
     }
 
     /**
      * @covers ::on
-     * @covers \Spiffy\Event\Exception\InvalidPriorityException::__construct
-     * @expectedException \Spiffy\Event\Exception\InvalidPriorityException
+     * @covers \Tonis\Event\Exception\InvalidPriorityException::__construct
+     * @expectedException \Tonis\Event\Exception\InvalidPriorityException
      * @expectedExceptionMessage Invalid argument: expected integer but received boolean
      */
     public function testOnThrowsExceptionForInvalidPriorities()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $em->on('foo', function() { }, false);
     }
 
@@ -109,20 +117,28 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        $em = new EventManager();
-        $em->on('foo', function() { echo 'bar'; });
-        $this->assertCount(1, $em->getEvents());
+        $em = new Manager();
+        $em->on('foo', function() { echo 'foo'; });
+        $em->on('bar', function() { echo 'bar'; });
+        $this->assertCount(2, $em->getListeners());
+
+        $em->clear('foo');
+        $this->assertCount(1, $em->getListeners('bar'));
+        $this->assertCount(1, $em->getListeners());
+        $this->assertCount(0, $em->getListeners('foo'));
 
         $em->clear();
-        $this->assertCount(0, $em->getEvents());
+        $this->assertCount(0, $em->getListeners('bar'));
+        $this->assertCount(0, $em->getListeners());
     }
 
     /**
      * @covers ::fire
+     * @covers ::getQueue
      */
     public function testFireCreatesEventIfNotGiven()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $response = $em->fire('foo');
 
         $this->assertInstanceOf('SplQueue', $response);
@@ -135,28 +151,12 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFireClonesPluginQueue()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $em->on('foo', function() { });
 
-        $this->assertCount(1, $em->getEvents('foo'));
+        $this->assertCount(1, $em->getListeners('foo'));
         $em->fire('foo');
-        $this->assertCount(1, $em->getEvents('foo'));
-    }
-
-    /**
-     * @covers ::fire
-     */
-    public function testFireSetsTargetProperly()
-    {
-        $target = new \StdClass();
-
-        $em = new EventManager();
-        $em->on('foo', function(Event $event) {
-            return $event->getTarget();
-        });
-
-        $result = $em->fire('foo', $target);
-        $this->assertSame($result->top(), $target);
+        $this->assertCount(1, $em->getListeners('foo'));
     }
 
     /**
@@ -165,16 +165,16 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
     public function testFireUsingAnEvent()
     {
         $event = new Event('foo', 'test');
-        $em = new EventManager();
-        $em->on('foo', function(Event $event) {
-            $event->setParams(['foo' => 'bar', 'baz' => 'booz']);
+        $em = new Manager();
+        $fired = false;
+        $em->on('foo', function(Event $event) use (&$fired) {
+            $fired = true;
         });
 
         $em->fire($event);
 
-        $this->assertSame('foo', $event->getType());
-        $this->assertSame(['foo' => 'bar', 'baz' => 'booz'], $event->getParams());
-        $this->assertCount(2, $event->getParams());
+        $this->assertSame('foo', $event->getName());
+        $this->assertTrue($fired);
     }
 
     /**
@@ -182,7 +182,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testResponseResultIsFirstInFirstOut()
     {
-        $em = new EventManager();
+        $em = new Manager();
         $event = new Event('foo');
 
         $em->on('foo', function() { return 3; });
@@ -203,13 +203,13 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers ::fire
-     * @expectedException \Spiffy\Event\Exception\MissingTypeException
-     * @expectedExceptionMessage Event object given but no type specified
+     * @expectedException \Tonis\Event\Exception\MissingNameException
+     * @expectedExceptionMessage Event given but no name specified
      */
-    public function testFiringEventWithNullTargetThrowsException()
+    public function testFiringEventWithNullNameThrowsException()
     {
-        $event = new Event();
-        $em = new EventManager();
+        $event = new Event(null);
+        $em = new Manager();
         $em->fire($event);
     }
 }

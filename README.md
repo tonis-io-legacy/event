@@ -1,20 +1,20 @@
-# Spiffy\Event
+# Tonis\Event
 
-[![Build Status](https://travis-ci.org/spiffyjr/spiffy-event.svg)](https://travis-ci.org/spiffyjr/spiffy-event)
-[![Code Coverage](https://scrutinizer-ci.com/g/spiffyjr/spiffy-event/badges/coverage.png?s=271d4c5ee861f409fc110379e9bee04f333cadea)](https://scrutinizer-ci.com/g/spiffyjr/spiffy-event/)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/spiffyjr/spiffy-event/badges/quality-score.png?s=279062fbeb70ce48056990eb05d886db49d13c3d)](https://scrutinizer-ci.com/g/spiffyjr/spiffy-event/)
+[![Build Status](https://travis-ci.org/tonis-io/event.svg)](https://travis-ci.org/tonis-io/event)
+[![Code Coverage](https://scrutinizer-ci.com/g/tonis-io/event/badges/coverage.png?s=271d4c5ee861f409fc110379e9bee04f333cadea)](https://scrutinizer-ci.com/g/tonis-io/event/)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/tonis-io/event/badges/quality-score.png?s=279062fbeb70ce48056990eb05d886db49d13c3d)](https://scrutinizer-ci.com/g/tonis-io/event/)
 
 ## Installation
-Spiffy\Event can be installed using composer which will setup any autoloading for you.
+Tonis\Event can be installed using composer which will setup any autoloading for you.
 
-`composer require spiffy/spiffy-event`
+`composer require spiffy/event`
 
 Additionally, you can download or clone the repository and setup your own autoloading.
 
 ## Create an event
 
 ```php
-use Spiffy\Event\Event;
+use Tonis\Event\Event;
 
 // Create an event that fires on 'foo'
 $event = new Event('foo');
@@ -31,7 +31,7 @@ $event->getParams()['foo']; // 'bar'
 ## Listening to events
 
 ```php
-use Spiffy\Event\EventManager;
+use Tonis\Event\EventManager;
 
 $em = new EventManager();
 
@@ -51,8 +51,8 @@ $em->on('foo', function() { echo 'd'; });
 ## Firing events
 
 ```php
-use Spiffy\Event\Event;
-use Spiffy\Event\EventManager;
+use Tonis\Event\Event;
+use Tonis\Event\EventManager;
 
 $em = new EventManager();
 $em->on('foo', function() { echo 'fired'; });
@@ -72,8 +72,8 @@ $em->fire($event);
 ## Handling responses
 
 ```php
-use Spiffy\Event\Event;
-use Spiffy\Event\EventManager;
+use Tonis\Event\Event;
+use Tonis\Event\EventManager;
 
 $em = new EventManager();
 
@@ -89,13 +89,13 @@ foreach ($em->fire('foo') as $response) {
 
 ## Plugins
 
-Sometimes you may want to collect several `on()` calls in a single class. Spiffy\Event provides a `Plugin` interface
+Sometimes you may want to collect several `on()` calls in a single class. Tonis\Event provides a `Plugin` interface
 you can implement and pass to the `plug()` method to prepare several events at a time. The name plugin is used because
 a collection of events is generally used to plugin additional functionality to an object.
 
 ```php
-use Spiffy\Event\Event;
-use Spiffy\Event\Plugin;
+use Tonis\Event\Event;
+use Tonis\Event\Plugin;
 
 class MyPlugin implements Plugin
 {
