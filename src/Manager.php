@@ -70,24 +70,17 @@ final class Manager implements ManagerInterface
     /**
      * {@inheritDoc}
      */
-    public function fire($nameOrEvent)
+    public function fire($name, EventInterface $event = null)
     {
-        if ($nameOrEvent instanceof Event) {
-            $event = $nameOrEvent;
-        } else {
-            $event = new Event($nameOrEvent);
-        }
-
-        if (null === $event->getName()) {
-            throw new Exception\MissingNameException();
-        }
-
+        $event = $event?: new Event();
         $response = new \SplQueue();
         $queue = clone $this->getQueue($event->getName());
+        
         foreach ($queue as $callable) {
             try {
                 $result = is_callable($callable) ? $callable($event) : null;
             } catch (\Exception $originalException) {
+                echo $originalException->getMessage() . PHP_EOL;
                 throw new Exception\SubscriberException($event, $originalException);
             }
 
