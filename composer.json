@@ -1,5 +1,5 @@
 {
-    "name": "spiffy/spiffy-event",
+    "name": "tonis/event",
     "authors": [
         {
             "name": "Kyle Spraggs",
@@ -9,17 +9,23 @@
     "description": "Spiffy\\Event is a light-weight, HHVM compatible, and dependency free event library.",
     "license": "BSD-3-Clause",
     "require": {
-        "php": ">=5.4"
+        "php": ">=5.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "~4.0",
-        "squizlabs/php_codesniffer": "~1.0"
+        "phpunit/phpunit": "^4.0",
+        "squizlabs/php_codesniffer": "^1.0"
     },
     "autoload": {
         "psr-4": {
-            "Spiffy\\Event\\": [
-                "src/",
-                "test/"
+            "Tonis\\Event\\": [
+                "src/"
+            ]
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tonis\\Event\\": [
+                "test"
             ]
         }
     },
