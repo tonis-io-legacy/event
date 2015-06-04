@@ -2,7 +2,7 @@
 
 namespace Tonis\Event;
 
-interface ManagerInterface
+interface EventManagerInterface
 {
     /**
      * Attaches events using a subscriber.

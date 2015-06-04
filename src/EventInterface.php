@@ -14,9 +14,4 @@ interface EventInterface
      * @return bool
      */
     public function isStopped();
-
-    /**
-     * @return string
-     */
-    public function getName();
 }

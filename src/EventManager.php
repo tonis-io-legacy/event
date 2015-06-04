@@ -2,7 +2,7 @@
 
 namespace Tonis\Event;
 
-final class Manager implements ManagerInterface
+final class EventManager implements EventManagerInterface
 {
     /**
      * @var array
@@ -74,16 +74,10 @@ final class Manager implements ManagerInterface
     {
         $event = $event?: new Event();
         $response = new \SplQueue();
-        $queue = clone $this->getQueue($event->getName());
-        
-        foreach ($queue as $callable) {
-            try {
-                $result = is_callable($callable) ? $callable($event) : null;
-            } catch (\Exception $originalException) {
-                echo $originalException->getMessage() . PHP_EOL;
-                throw new Exception\SubscriberException($event, $originalException);
-            }
+        $queue = clone $this->getQueue($name);
 
+        foreach ($queue as $callable) {
+            $result = is_callable($callable) ? $callable($event) : null;
             $response->enqueue($result);
 
             if ($event->isStopped()) {

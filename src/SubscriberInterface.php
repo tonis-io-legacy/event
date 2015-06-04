@@ -5,8 +5,8 @@ namespace Tonis\Event;
 interface SubscriberInterface
 {
     /**
-     * @param Manager $events
+     * @param EventManager $events
      * @return void
      */
-    public function subscribe(Manager $events);
+    public function subscribe(EventManager $events);
 }
