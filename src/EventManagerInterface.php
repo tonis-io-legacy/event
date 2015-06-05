@@ -33,9 +33,10 @@ interface EventManagerInterface
      * Fires an event.
      *
      * @param string|Event $name
+     * @param null|EventInterface $event
      * @return \SplQueue
      */
-    public function fire($name);
+    public function fire($name, EventInterface $event = null);
 
     /**
      * Clears all events.
