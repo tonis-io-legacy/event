@@ -2,6 +2,8 @@
 
 namespace Tonis\Event;
 
+use Tonis\Event\Exception\MissingNameException;
+
 final class EventManager implements EventManagerInterface
 {
     /**

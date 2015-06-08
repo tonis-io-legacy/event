@@ -3,13 +3,13 @@
 namespace Tonis\Event\TestAsset;
 
 use Tonis\Event\EventsAwareTrait;
-use Tonis\Event\Manager;
+use Tonis\Event\EventManager;
 
 class EventsAware
 {
     use EventsAwareTrait;
 
-    protected function attachDefaultListeners(Manager $events)
+    protected function attachDefaultListeners(EventManager $events)
     {
         $events->subscribe(new BasicSubscriber());
     }

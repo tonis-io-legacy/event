@@ -15,7 +15,7 @@ class EventsAwareTraitTest extends \PHPUnit_Framework_TestCase
      */
     public function testSetEventManagerInitializesEvents()
     {
-        $em = new Manager();
+        $em = new EventManager();
 
         $trait = new EventsAware();
         $trait->setEventManager($em);
@@ -33,6 +33,6 @@ class EventsAwareTraitTest extends \PHPUnit_Framework_TestCase
     public function testEventsAreLazyLoaded()
     {
         $trait = new EventsAware();
-        $this->assertInstanceOf('Tonis\Event\Manager', $trait->events());
+        $this->assertInstanceOf(EventManager::class, $trait->events());
     }
 }

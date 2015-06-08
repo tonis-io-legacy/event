@@ -2,15 +2,13 @@
 
 namespace Tonis\Event;
 
-use Tonis\Event\TestAsset\BasicPlugin;
 use Tonis\Event\TestAsset\BasicSubscriber;
-use Tonis\Event\TestAsset\EventWithNoName;
 
 /**
  * Class EventManagerTest
  * @package Tonis\Event
  *
- * @coversDefaultClass \Tonis\Event\Manager
+ * @coversDefaultClass \Tonis\Event\EventManager
  */
 class EventManagerTest extends \PHPUnit_Framework_TestCase
 {
@@ -19,7 +17,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testSubscribe()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $em->subscribe(new BasicSubscriber());
 
         $result = $em->fire('foo');
@@ -30,38 +28,11 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
     /**
      * @covers ::fire
      * @covers ::getQueue
-     * @covers \Tonis\Event\Exception\MissingNameException
-     * @expectedException \Tonis\Event\Exception\MissingNameException
-     * @expectedExceptionMessage Event given but no name specified
-     */
-    public function testExceptionThrownForMissingName()
-    {
-        $event = new EventWithNoName();
-        $em = new Manager();
-        $em->fire($event);
-    }
-
-    /**
-     * @covers ::fire
-     * @covers \Tonis\Event\Exception\SubscriberException
-     * @expectedException \Tonis\Event\Exception\SubscriberException
-     * @expectedExceptionMessage Error: exception while firing "foo" caught from
-     */
-    public function testExceptionsAreRethrown()
-    {
-        $em = new Manager();
-        $em->on('foo', function() { throw new \RuntimeException; });
-        $em->fire('foo');
-    }
-
-    /**
-     * @covers ::fire
-     * @covers ::getQueue
      */
     public function testEventsStops()
     {
         $var = null;
-        $em = new Manager();
+        $em = new EventManager();
         $em->on('foo', function($e) use (&$var) {
             $var = 'foo';
             $e->stop();
@@ -80,7 +51,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnAddsEventsAndAreRetrievedProperly()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $em->on('foo', function() { echo 'bar'; });
 
         $this->assertCount(1, $em->getListeners());
@@ -96,7 +67,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnThrowsExceptionForNonCallable()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $em->on('foo', false);
     }
 
@@ -108,7 +79,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testOnThrowsExceptionForInvalidPriorities()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $em->on('foo', function() { }, false);
     }
 
@@ -117,7 +88,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testClear()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $em->on('foo', function() { echo 'foo'; });
         $em->on('bar', function() { echo 'bar'; });
         $this->assertCount(2, $em->getListeners());
@@ -138,7 +109,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFireCreatesEventIfNotGiven()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $response = $em->fire('foo');
 
         $this->assertInstanceOf('SplQueue', $response);
@@ -151,7 +122,7 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFireClonesPluginQueue()
     {
-        $em = new Manager();
+        $em = new EventManager();
         $em->on('foo', function() { });
 
         $this->assertCount(1, $em->getListeners('foo'));
@@ -164,16 +135,14 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testFireUsingAnEvent()
     {
-        $event = new Event('foo', 'test');
-        $em = new Manager();
+        $em = new EventManager();
         $fired = false;
         $em->on('foo', function(Event $event) use (&$fired) {
             $fired = true;
         });
 
-        $em->fire($event);
+        $em->fire('foo');
 
-        $this->assertSame('foo', $event->getName());
         $this->assertTrue($fired);
     }
 
@@ -182,14 +151,13 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
      */
     public function testResponseResultIsFirstInFirstOut()
     {
-        $em = new Manager();
-        $event = new Event('foo');
+        $em = new EventManager();
 
         $em->on('foo', function() { return 3; });
         $em->on('foo', function() { return 2; }, 2);
         $em->on('foo', function() { return 1; });
 
-        $response = $em->fire($event);
+        $response = $em->fire('foo');
         $response->rewind();
 
         $this->assertInstanceOf('SplQueue', $response);
@@ -199,17 +167,5 @@ class EventManagerTest extends \PHPUnit_Framework_TestCase
         $this->assertSame(3, $response->current());
         $response->next();
         $this->assertSame(1, $response->current());
-    }
-
-    /**
-     * @covers ::fire
-     * @expectedException \Tonis\Event\Exception\MissingNameException
-     * @expectedExceptionMessage Event given but no name specified
-     */
-    public function testFiringEventWithNullNameThrowsException()
-    {
-        $event = new Event(null);
-        $em = new Manager();
-        $em->fire($event);
     }
 }
