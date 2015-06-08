@@ -10,23 +10,6 @@ use Tonis\Event\TestAsset\EventsAware;
 class EventsAwareTraitTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers ::setEventManager
-     * @covers ::attachDefaultListeners
-     */
-    public function testSetEventManagerInitializesEvents()
-    {
-        $em = new EventManager();
-
-        $trait = new EventsAware();
-        $trait->setEventManager($em);
-
-        $this->assertSame($em, $trait->events());
-
-        $result = $em->fire('foo');
-        $this->assertSame('fired', $result->top());
-    }
-
-    /**
      * @covers ::events
      * @covers ::setEventManager
      */

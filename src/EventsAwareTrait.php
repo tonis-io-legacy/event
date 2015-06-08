@@ -13,7 +13,6 @@ trait EventsAwareTrait
     public function setEventManager(EventManager $events)
     {
         $this->events = $events;
-        $this->attachDefaultListeners($events);
     }
 
     /**
@@ -25,13 +24,5 @@ trait EventsAwareTrait
             $this->setEventManager(new EventManager());
         }
         return $this->events;
-    }
-
-    /**
-     * @codeCoverageIgnore
-     * @param EventManager $events
-     */
-    protected function attachDefaultListeners(EventManager $events)
-    {
     }
 }

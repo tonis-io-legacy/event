@@ -32,7 +32,7 @@ interface EventManagerInterface
     /**
      * Fires an event.
      *
-     * @param string|Event $name
+     * @param string $name
      * @param null|EventInterface $event
      * @return \SplQueue
      */
