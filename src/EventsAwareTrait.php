@@ -18,7 +18,7 @@ trait EventsAwareTrait
     /**
      * @return EventManager
      */
-    public function events()
+    public function getEventManager()
     {
         if (!$this->events instanceof EventManager) {
             $this->setEventManager(new EventManager());

@@ -10,12 +10,12 @@ use Tonis\Event\TestAsset\EventsAware;
 class EventsAwareTraitTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @covers ::events
+     * @covers ::getEventManager
      * @covers ::setEventManager
      */
     public function testEventsAreLazyLoaded()
     {
         $trait = new EventsAware();
-        $this->assertInstanceOf(EventManager::class, $trait->events());
+        $this->assertInstanceOf(EventManager::class, $trait->getEventManager());
     }
 }
